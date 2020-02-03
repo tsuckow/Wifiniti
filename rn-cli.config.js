@@ -11,9 +11,10 @@ let config = {
 			// ignore git directories
 			/.*\.git\/.*/,
 			// Ignore android directories
-			/.*\/app\/build\/.*/
+			/.*\/app\/build\/.*/,
 
 			// Add more regexes here for paths which should be blacklisted from the packager.
+			/.*\/android\/build\/.*/
 		]),
 	}
 };

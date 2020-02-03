@@ -1,9 +1,14 @@
 package com.codingwell.android;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.util.Log;
+
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.NativeModule;
@@ -20,6 +25,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -45,6 +51,43 @@ public class WifiManagerModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void checkPermission() {
+
+        List<String> permissionsList = new ArrayList<String>();
+
+        Context context = reactContext.getApplicationContext();
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_WIFI_STATE) != PackageManager.PERMISSION_GRANTED) {
+            permissionsList.add(Manifest.permission.ACCESS_WIFI_STATE);
+        }
+
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.CHANGE_WIFI_STATE) != PackageManager.PERMISSION_GRANTED) {
+            permissionsList.add(Manifest.permission.CHANGE_WIFI_STATE);
+        }
+
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_NETWORK_STATE) != PackageManager.PERMISSION_GRANTED) {
+            permissionsList.add(Manifest.permission.ACCESS_NETWORK_STATE);
+        }
+
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            permissionsList.add(Manifest.permission.ACCESS_COARSE_LOCATION);
+        }
+
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            permissionsList.add(Manifest.permission.ACCESS_FINE_LOCATION);
+        }
+
+        if (permissionsList.size() > 0) {
+            ActivityCompat.requestPermissions(reactContext.getCurrentActivity(), permissionsList.toArray(new String[permissionsList.size()]),
+                    1);
+        }
+    }
+
+    @ReactMethod
+    public void scanWifi() {
+        wifi.startScan();
+    }
+
+    @ReactMethod
     public void listWifi(Promise promise) {
         try {
             List<ScanResult> results = wifi.getScanResults();
@@ -60,12 +103,11 @@ public class WifiManagerModule extends ReactContextBaseJavaModule {
                         wifiObject.putInt("level", result.level);
                         wifiObject.putDouble("timestamp", result.timestamp);
                         //Other fields not added
-                        //wifiObject.put("operatorFriendlyName", result.operatorFriendlyName);
-                        //wifiObject.put("venueName", result.venueName);
-                        //wifiObject.put("centerFreq0", result.centerFreq0);
-                        //wifiObject.put("centerFreq1", result.centerFreq1);
-                        //wifiObject.put("channelWidth", result.channelWidth);
-
+                        wifiObject.putString("operatorFriendlyName", result.operatorFriendlyName.toString());
+                        wifiObject.putString("venueName", result.venueName.toString());
+                        wifiObject.putInt("centerFreq0", result.centerFreq0);
+                        wifiObject.putInt("centerFreq1", result.centerFreq1);
+                        wifiObject.putInt("channelWidth", result.channelWidth);
                     wifiArray.pushMap(wifiObject);
                 }
             }

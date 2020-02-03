@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import WifiManager from './native/WifiManager';
 
@@ -7,6 +7,11 @@ export default function App() {
 
   const [info, setInfo] = useState("Loading");
   WifiManager.listWifi().then(info => setInfo(JSON.stringify(info))).catch((e) => setInfo(JSON.stringify(e)))
+
+  useEffect(() => {
+    WifiManager.checkPermission();
+    WifiManager.scanWifi();
+  }, [])
 
   return (
     <View style={styles.container}>

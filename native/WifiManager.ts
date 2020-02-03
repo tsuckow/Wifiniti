@@ -13,7 +13,11 @@ interface WifiManager {
    */
   log: (message: string) => void;
 
-  listWifi: () => Promise<WifiInfo[]>
+  checkPermission: () => void;
+
+  scanWifi: () => void;
+
+  listWifi: () => Promise<WifiInfo[]>;
 }
 
 import { NativeModules } from "react-native";
